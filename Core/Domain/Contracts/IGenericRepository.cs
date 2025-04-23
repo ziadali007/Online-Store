@@ -14,6 +14,9 @@ namespace Domain.Contracts
 
         Task<T?> GetAsync(TKey id);
 
+        Task<IEnumerable<T>> GetAllAsync(ISpecifications<T,TKey> Spec,bool trackChanges = false);
+
+        Task<T?> GetAsync(ISpecifications<T, TKey> Spec, TKey id);
         Task AddAsync(T entity);
 
 
