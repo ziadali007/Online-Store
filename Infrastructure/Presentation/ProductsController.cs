@@ -14,9 +14,9 @@ namespace Presentation
     {
         [HttpGet]
 
-        public async Task<IActionResult> GetAllProducts(int? brandid, int? typeid)
+        public async Task<IActionResult> GetAllProducts(int? brandid, int? typeid, string? sort)
         {
-            var result = await serviceManager.ProductService.GetAllProductsAsync(brandid, typeid);
+            var result = await serviceManager.ProductService.GetAllProductsAsync(brandid, typeid, sort);
             if (result == null)
             {
                 return NotFound();
