@@ -18,7 +18,13 @@ namespace Persistence
             if(Spec.Criteria is not null)
                 query= query.Where(Spec.Criteria);
 
-            query=Spec.IncludeExpressions.Aggregate(query,(CurrentQuery,includeExpression)=> CurrentQuery.Include(includeExpression));
+            if (Spec.OrderBy is not null)
+                query = query.OrderBy(Spec.OrderBy);
+            else if (Spec.OrderByDescending is not null)
+                query = query.OrderByDescending(Spec.OrderByDescending);
+
+
+            query =Spec.IncludeExpressions.Aggregate(query,(CurrentQuery,includeExpression)=> CurrentQuery.Include(includeExpression));
 
 
             return query;
