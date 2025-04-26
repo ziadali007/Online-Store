@@ -23,6 +23,9 @@ namespace Persistence
             else if (Spec.OrderByDescending is not null)
                 query = query.OrderByDescending(Spec.OrderByDescending);
 
+            if (Spec.IsPagination)
+                query = query.Skip(Spec.Skip).Take(Spec.Take);
+
 
             query =Spec.IncludeExpressions.Aggregate(query,(CurrentQuery,includeExpression)=> CurrentQuery.Include(includeExpression));
 
