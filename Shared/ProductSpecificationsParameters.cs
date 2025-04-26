@@ -15,6 +15,8 @@ namespace Shared
 
         public string? Sort { get; set; }
 
+        public string? Search { get; set; }
+
         private int _pageIndex=1;
 
         private int _pageSize=5;
