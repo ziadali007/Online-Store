@@ -18,6 +18,7 @@ namespace Services.Specifications
 
         public ProductWithBrandsAndTypes(ProductSpecificationsParameters productSpecParams) : base(
             P=>        
+            (string.IsNullOrEmpty(productSpecParams.Search) || P.Name.ToLower().Contains(productSpecParams.Search.ToLower()))&&
             (!productSpecParams.BrandId.HasValue || P.BrandId== productSpecParams.BrandId) &&
             (!productSpecParams.TypeId.HasValue || P.TypeId == productSpecParams.TypeId)           
         )
