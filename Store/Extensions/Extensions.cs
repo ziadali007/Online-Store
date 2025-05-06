@@ -5,6 +5,14 @@ using Persistence;
 using Shared.ErrorModels;
 using Domain.Contracts;
 using Store.middlewares;
+using Microsoft.Extensions.DependencyInjection;
+using Domain.Models.Identity;
+using Microsoft.AspNetCore.Identity;
+using Persistence.Identity;
+using Shared;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace Store.Extensions
 {
@@ -16,10 +24,13 @@ namespace Store.Extensions
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 
             services.AddSwaggerServices();
+            services.AddIdentityServices();
 
             services.AddInfrastructureServices(configuration);
 
-            services.AddApplicationServices();
+            services.ConfigureJwtServices(configuration);
+
+            services.AddApplicationServices(configuration);
 
 
             services.ConfigureServices();
@@ -36,6 +47,42 @@ namespace Store.Extensions
   
             return services;
 
+        }
+
+        private static IServiceCollection ConfigureJwtServices(this IServiceCollection services,IConfiguration configuration)
+        {
+
+            var jwtOptions = configuration.GetSection("JwtOptions").Get<JwtOptions>();
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters()
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidateLifetime = true,
+
+                    ValidIssuer=jwtOptions.Issuer,
+                    ValidAudience = jwtOptions.Audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.SecretKey))
+
+                };
+
+            }
+
+            );
+
+            return services;
+
+        }
+        private static IServiceCollection AddIdentityServices(this IServiceCollection services)
+        {
+            services.AddIdentity<AppUser, IdentityRole>().AddEntityFrameworkStores<StoreIdentityDbContext>();
+            return services;
         }
 
         private static IServiceCollection AddSwaggerServices(this IServiceCollection services)
@@ -109,6 +156,7 @@ namespace Store.Extensions
             var dbInitializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>();
 
             await dbInitializer.InitializeAsync();
+            await dbInitializer.InitializeIdentityAsync();
 
 
             return app;
