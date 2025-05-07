@@ -23,5 +23,7 @@ namespace Services
         public ICacheService CacheService { get; } = new CacheService(cacheRepository);
 
         public IAuthService authService { get; }= new AuthService(userManager, options);
+
+        public IOrderService OrderService { get; } = new OrderService(mapper, basketRepository, unitOfWork);
     }
 }
