@@ -73,6 +73,9 @@ namespace Persistence.Repositories
             return SpecificationEvaluator.GetQuery(spec,_context.Set<T>());
         }
 
-       
+        public async Task<T?> GetAsync(ISpecifications<T, TKey> Spec)
+        {
+            return await ApplySpecifications(Spec).FirstOrDefaultAsync();
+        }
     }
 }

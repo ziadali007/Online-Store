@@ -14,7 +14,13 @@ using System.Threading.Tasks;
 
 namespace Services
 {
-    public class ServiceManager(IUnitOfWork unitOfWork,IMapper mapper,IBasketRepository basketRepository, ICacheRepository cacheRepository, UserManager<AppUser> userManager,IOptions<JwtOptions> options) : IServiceManager
+    public class ServiceManager(IUnitOfWork unitOfWork,
+        IMapper mapper,
+        IBasketRepository basketRepository,
+        ICacheRepository cacheRepository,
+        UserManager<AppUser> userManager,
+        IOptions<JwtOptions> options,
+        IConfiguration configuration) : IServiceManager
     {
         public IProductService ProductService { get; } = new ProductService(unitOfWork, mapper);
 
@@ -25,5 +31,7 @@ namespace Services
         public IAuthService authService { get; }= new AuthService(userManager, options,mapper);
 
         public IOrderService OrderService { get; } = new OrderService(mapper, basketRepository, unitOfWork);
+
+        public IPaymentService paymentService { get; } = new PaymentService(basketRepository, unitOfWork, mapper, configuration);
     }
 }
