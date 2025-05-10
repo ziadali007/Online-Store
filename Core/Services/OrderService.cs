@@ -42,7 +42,13 @@ namespace Services
 
             var subTotal= orderItems.Sum(item => item.Price * item.Quantity);
 
-            var order = new Order(userEmail, address, orderItems, deliveryMethod, subTotal, "");
+            var spec = new OrderWithPaymentIntentSpecifications(basket.PaymentIntentId);
+            var existingOrder = await unitOfWork.GetRepository<Order, Guid>().GetAsync(spec);
+
+            if(existingOrder is not null) 
+                unitOfWork.GetRepository<Order, Guid>().Delete(existingOrder);
+
+            var order = new Order(userEmail, address, orderItems, deliveryMethod, subTotal, basket.PaymentIntentId);
 
             await unitOfWork.GetRepository<Order, Guid>().AddAsync(order);
 
